@@ -1,0 +1,264 @@
+================================================================
+GODOT CARD RPG — CHANGES LOG
+================================================================
+================================================================
+WHAT I IMPLEMENTED — FOR SUBMISSION
+================================================================
+
+Project: Education Realm — Card-Based Tactical RPG
+Engine:  Godot 4.2 | Language: GDScript
+
+----------------------------------------------------------------
+
+OVERVIEW
+
+Education Realm is a turn-based card game built in Godot 4.2.
+The theme is education and social equity — the three card types
+(Access, Quality, and Equity) represent the core pillars of a
+fair education system. The player fights an enemy that embodies
+systemic barriers, and must strategically play cards each turn
+to weaken it across all three dimensions before pressure
+overwhelms them.
+
+The most distinctive design choice in this game is that its
+core mechanics are directly inspired by quantum mechanics —
+specifically superposition and decoherence. These are not just
+cosmetic labels; the actual gameplay logic models these concepts
+in a meaningful way, as described below.
+
+----------------------------------------------------------------
+
+QUANTUM MECHANICS IN THE GAME
+
+The central question this game asks is: what does it mean to
+"fight" an abstract systemic problem like unequal access to
+education? The answer I explored was to make the enemy's
+weakness genuinely uncertain — not just hidden, but
+mathematically undefined until observed, just like a quantum
+system.
+
+SUPERPOSITION
+Each of the three stats (Access, Quality, Equity) exists in a
+superposition of possible values rather than a single known
+number. When the player plays a card, they do not directly
+increase a stat — instead they widen the range of what that
+stat could become. This is represented visually with three
+layered bars per stat:
+
+  - The coloured bar shows the last confirmed (observed) value.
+  - The white bar shows the upper bound of the possible range.
+  - The dark bar shows the lower bound of the possible range.
+
+The gap between the dark and white bars is the superposition —
+the space of all outcomes that are currently possible. The
+player is essentially influencing probability, not certainty.
+The range expands asymmetrically when a card is played
+(low end gains 60% of the card's power, high end gains 140%)
+to create genuine tension around whether the collapse will
+land well or poorly.
+
+WAVE FUNCTION COLLAPSE
+When the player presses End Turn, the superposition collapses.
+Each stat resolves to a random value uniformly drawn from its
+current [min, max] range. This is the wave function collapse —
+the act of observation forces the system into a definite state.
+The player cannot know in advance where the value will land,
+only that playing more cards of that type makes a better
+outcome more likely by shifting the range upward.
+
+DECOHERENCE
+Decoherence in quantum physics refers to a quantum system
+losing its superposition prematurely due to unwanted
+interaction with its environment. In this game, decoherence
+is a risk mechanic that triggers randomly as the player plays
+more cards. Each card played doubles the probability of a
+decoherence event occurring. When it fires:
+
+  - One random stat's superposition collapses back to its
+	last confirmed value, erasing all the progress the player
+	built up on that stat this turn.
+  - The enemy retaliates — an attack animation plays, the
+	screen shakes, and the player takes a symbolic hit.
+  - The decoherence bar resets and a message identifies which
+	stat collapsed.
+  - If decoherence happens 5 times across the whole game,
+	the system is considered fully destabilised and the
+	player loses.
+
+This mechanic creates a genuine dilemma: playing more cards
+gives a better range but raises the risk of decoherence
+undoing it all. The player must decide when enough superposition
+has been built up and it is time to collapse it safely via
+End Turn.
+
+The decoherence probability formula is: chance = numerator / 526,
+where numerator starts at 1 and doubles after each safe card.
+This means the first card has a ~0.19% chance, the second ~0.38%,
+and so on — it escalates quickly if the player is greedy.
+
+----------------------------------------------------------------
+
+PRESSURE MECHANIC
+
+To prevent the player from stalling indefinitely, a pressure
+system escalates over time. Each End Turn increases the
+pressure bar by a rising amount following the schedule
+[5, 8, 12, 17, 23, 30, 38, 47]. Reaching 100 pressure is a
+loss condition. A ghost preview bar always shows how much
+pressure the next End Turn will cost, giving the player
+information to weigh risk vs. reward each turn.
+
+----------------------------------------------------------------
+
+CARD SYSTEM
+
+The player holds 4 cards at a time, each randomly typed as
+Access, Quality, or Equity. Playing a card sends it to the
+deck with a smooth animation and deals a fresh random card
+back into the hand. At End Turn, all four cards are reshuffled
+with staggered fly-to-deck animations. Cards are locked during
+animations to prevent unintended double inputs.
+
+Cards have diminishing returns within a single turn — playing
+the same card type repeatedly is less efficient (100%, 80%,
+60%, minimum 20%), encouraging variety and pushing the player
+to spread their effort across all three stats.
+
+----------------------------------------------------------------
+
+VISUAL FEEDBACK & POLISH
+
+A card hover effect scales cards up slightly when the mouse
+moves over them, with a springy overshoot animation, giving
+the hand a tactile feel. The stat labels (A, Q, E) change
+colour from their base colour to yellow after End Turn when
+their stat has been fully maxed, but only after the collapse —
+not during card play — so the player does not know for certain
+whether they succeeded until they commit.
+
+Screen shake is implemented on decoherence events to
+emphasise the disruption. All animations are sequenced with
+flags so that Godot's _process() loop cannot accidentally
+override mid-sequence states (e.g. snapping the enemy back
+to idle while an attack animation is playing).
+
+----------------------------------------------------------------
+
+AUDIO
+
+The following sound effects are implemented and triggered
+at the appropriate game moments:
+
+  - Background music: loops continuously from game start.
+  - Card hover sound: plays when the mouse enters a card.
+  - Card click sound: plays when a card is clicked.
+  - Card shuffle sound: plays on initial deal, end-turn
+	reshuffle, and game-end card collection.
+  - Attack sound: plays when the player attacks.
+  - Hit sound: plays when the enemy is hit and when the
+	player is hit during decoherence retaliation.
+  - Decoherence sound: plays instantly on decoherence trigger.
+  - Victory sound: plays when the player wins.
+  - Game over sound: plays when the player loses.
+
+----------------------------------------------------------------
+
+WIN AND LOSE CONDITIONS
+
+  WIN  — All three stats (Access, Quality, Equity) reach 100
+		 after an End Turn collapse. The enemy plays its death
+		 animation, the player celebrates, and a closing message
+		 appears: "Crisis Contained. The Education Realm
+		 stabilizes. The system holds, for now..."
+
+  LOSE — Either pressure reaches 100 (overwhelmed by time),
+		 or decoherence is triggered 5 times (the quantum
+		 system fully destabilised). Both trigger a game over
+		 with the appropriate message.
+
+================================================================
+
+
+================================================================
+DEVELOPMENT ASSISTANCE — WHAT WAS BUILT COLLABORATIVELY
+================================================================
+
+The following describes the systems and features that were
+designed and implemented with the help of an AI assistant
+(Claude) during the development of this project.
+
+----------------------------------------------------------------
+
+QUANTUM MECHANICS IMPLEMENTATION
+
+The most significant collaborative contribution was translating
+quantum mechanical concepts into concrete, playable game
+systems. The idea of using superposition and decoherence as
+gameplay mechanics came from the project's theme, but turning
+those ideas into working GDScript logic required designing data
+structures and interaction rules that genuinely reflected the
+physics concepts rather than just borrowing their names.
+
+The superposition system was built from scratch — each stat
+needed to track not one value but a range (min and max bounds),
+and every card play needed to widen that range in a way that
+felt meaningful. The asymmetric split (60% low / 140% high)
+was chosen so that the upper bound always grows faster than
+the lower, creating genuine uncertainty about where the
+collapse will land. The three-bar visual system (coloured main
+bar, white upper bound, dark lower bound) was designed and
+coded entirely at runtime in GDScript to represent that
+superposition state clearly without cluttering the scene file.
+
+The decoherence system involved designing a probability
+mechanic that escalates with player greed. The doubling
+formula (numerator starts at 1, doubles each safe card,
+resets on trigger) was chosen specifically to mirror how
+real decoherence becomes more likely as a quantum system
+interacts more with its environment. Translating this into
+an in-game risk/reward dilemma — do I play another card
+and risk collapsing my progress, or do I end my turn now —
+was a core part of the design work done collaboratively.
+
+
+
+----------------------------------------------------------------
+
+CARD SYSTEM POLISH
+
+The card hover effect was implemented with a deliberate
+design choice: scaling the Sprite2D child rather than the
+root Node2D. This was necessary because scaling the root
+would also scale the Area2D collision shape, causing
+Godot to fire mouse_exited immediately after mouse_entered
+as the shape boundary shifted under the cursor. By targeting
+only the sprite, the collision area stays stable and the
+hover effect works correctly. The TRANS_BACK easing was
+chosen to give a springy, tactile overshoot feel.
+
+
+A cards_enabled flag was added to the card manager to lock
+the hand during animations, preventing the player from
+clicking multiple cards before the first one finishes
+its fly-to-deck sequence.
+
+----------------------------------------------------------------
+
+UI AND FEEDBACK SYSTEMS
+
+The decoherence progress bar was given a ghost preview bar
+that always shows where the bar will be after the next card
+is played (the next doubling), so the player can see the
+risk growing in real time. The same ghost preview pattern
+was applied to the pressure bar, showing the cost of the
+next End Turn before the player commits to it.
+
+The A, Q, E stat labels were given a colour change system
+that turns them yellow when their respective stat is fully
+maxed — but only after End Turn resolves, not during card
+play. This was a deliberate design choice to preserve the
+superposition mystery: the player should not know for
+certain whether a stat has been maxed until the wave
+function collapses.
+
+================================================================

@@ -1,0 +1,216 @@
+[gd_scene load_steps=13 format=3 uid="uid://c3bdkhxvr45dk"]
+
+[ext_resource type="PackedScene" uid="uid://ksqm14st6k7l" path="res://scenes/player.tscn" id="1_3h7yy"]
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_3xskl"]
+[ext_resource type="Texture2D" uid="uid://bvv27yhyn8ahh" path="res://assets/background/8bit-pixel-art-school-building-with-green-lawn-in-front-campus-background-for-video-game-setting-vector.jpg" id="1_l38rq"]
+[ext_resource type="PackedScene" uid="uid://dup7uxpwjiu52" path="res://scenes/tile_map.tscn" id="2_rhltq"]
+[ext_resource type="PackedScene" uid="uid://ra1ead23qp8c" path="res://scenes/enemy.tscn" id="3_21c2m"]
+[ext_resource type="PackedScene" uid="uid://c2y3p3wj1gb0f" path="res://scenes/card_manager.tscn" id="6_ohs34"]
+[ext_resource type="FontFile" uid="uid://bpgkul5gv6s5a" path="res://assets/fonts/Early GameBoy.ttf" id="8_5a6ua"]
+[ext_resource type="PackedScene" uid="uid://1gmgga7rgjrs" path="res://scenes/weakness_meter.tscn" id="8_xgrfu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_deco_transparent"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deco_fill"]
+bg_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deco_bg"]
+bg_color = Color(0.172549, 0.172549, 0.172549, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+shadow_color = Color(0, 0, 0, 0.27451)
+shadow_offset = Vector2(2.08165e-12, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deco_ghost"]
+bg_color = Color(1, 0.945098, 0.847059, 0.67451)
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_3xskl")
+
+[node name="background" type="TextureRect" parent="."]
+offset_left = -51.0
+offset_top = -193.0
+offset_right = 2078.0
+offset_bottom = 897.0
+scale = Vector2(0.217422, 0.257774)
+texture = ExtResource("1_l38rq")
+
+[node name="player" parent="." instance=ExtResource("1_3h7yy")]
+position = Vector2(15, 18)
+
+[node name="TileMap" parent="." instance=ExtResource("2_rhltq")]
+position = Vector2(-25, 20)
+
+[node name="Enemy" parent="." instance=ExtResource("3_21c2m")]
+position = Vector2(333, 3)
+
+[node name="player_marker" type="Marker2D" parent="."]
+position = Vector2(133, 11)
+
+[node name="enemy_marker" type="Marker2D" parent="."]
+position = Vector2(264, 10)
+
+[node name="card_manager" parent="." instance=ExtResource("6_ohs34")]
+visible = false
+position = Vector2(107, 38)
+
+[node name="weakness_meter" parent="." instance=ExtResource("8_xgrfu")]
+visible = false
+offset_left = 322.0
+offset_top = -42.0
+offset_right = 322.0
+offset_bottom = -42.0
+rotation = 3.14159
+scale = Vector2(0.25, 0.25)
+
+[node name="ui" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="decoherence_bar" type="ProgressBar" parent="ui"]
+offset_left = 4.0
+offset_top = 56.0
+offset_right = 124.0
+offset_bottom = 66.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_deco_transparent")
+theme_override_styles/fill = SubResource("StyleBoxFlat_deco_fill")
+max_value = 526.0
+show_percentage = false
+
+[node name="deco_ghost_bar" type="ProgressBar" parent="ui/decoherence_bar"]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_deco_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_deco_ghost")
+max_value = 526.0
+show_percentage = false
+
+[node name="decoherence_label" type="Label" parent="ui"]
+modulate = Color(1, 1, 1, 0)
+offset_top = 148.0
+offset_right = 576.0
+offset_bottom = 172.0
+theme_override_colors/font_color = Color(1, 0.25, 0.25, 1)
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+
+[node name="game_over_label" type="Label" parent="ui"]
+visible = false
+offset_top = 148.0
+offset_right = 576.0
+offset_bottom = 172.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_fonts/font = ExtResource("8_5a6ua")
+horizontal_alignment = 1
+
+[node name="end_turn_button" type="Button" parent="ui"]
+offset_left = 316.0
+offset_top = 243.0
+offset_right = 436.0
+offset_bottom = 271.0
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 12
+text = "END TURN"
+
+[node name="Labels" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 316.0
+offset_top = 243.0
+offset_right = 356.0
+offset_bottom = 283.0
+
+[node name="Decoherence_bar_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -248.0
+offset_top = -313.0
+offset_right = -175.0
+offset_bottom = -290.0
+theme_override_colors/font_color = Color(0.670588, 0.364706, 0, 1)
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 5
+text = "Decoherence Bar
+"
+
+[node name="Pressure_bar_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -248.0
+offset_top = -329.0
+offset_right = -188.0
+offset_bottom = -306.0
+theme_override_colors/font_color = Color(0, 0.635294, 0, 1)
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 5
+text = "Pressure  bar"
+
+[node name="Game_win_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -241.0
+offset_top = -292.0
+offset_right = 2.0
+offset_bottom = -191.0
+theme_override_colors/font_color = Color(0.219608, 0.607843, 1, 1)
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 6
+text = "Crisis Contained.
+The Education Realm stabilizes. 
+The system holds, for now..."
+horizontal_alignment = 1
+
+[node name="E_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -80.0
+offset_top = -322.0
+offset_right = -40.0
+offset_bottom = -279.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 8
+text = "E:
+
+
+"
+
+[node name="Q_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -80.0
+offset_top = -309.0
+offset_right = -40.0
+offset_bottom = -286.0
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 8
+text = "Q:"
+
+[node name="A_label" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_left = -80.0
+offset_top = -296.0
+offset_right = -40.0
+offset_bottom = -273.0
+theme_override_colors/font_color = Color(0, 0, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("8_5a6ua")
+theme_override_font_sizes/font_size = 8
+text = "A:"
+
+[connection signal="card_clicked_with_type" from="card_manager" to="." method="_on_card_manager_card_clicked_with_type"]
+[connection signal="pressed" from="ui/end_turn_button" to="." method="_on_end_turn_pressed"]
